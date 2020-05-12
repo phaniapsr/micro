@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro/v2/store"
 	pb "github.com/micro/go-micro/v2/store/service/proto"
 	mcli "github.com/micro/micro/v2/cli"
+	scli "github.com/micro/micro/v2/store/cli"
 	"github.com/micro/micro/v2/store/handler"
 	"github.com/pkg/errors"
 )
@@ -19,7 +20,7 @@ var (
 	Address = ":8002"
 )
 
-// run runs the micro server
+// Run runs the micro server
 func Run(ctx *cli.Context, srvOpts ...micro.Option) {
 	log.Init(log.WithFields(map[string]interface{}{"service": "store"}))
 
@@ -104,7 +105,7 @@ func Commands(options ...micro.Option) []*cli.Command {
 			Run(ctx, options...)
 			return nil
 		},
-		Subcommands: mcli.StoreCommands(),
+		Subcommands: storeCommands(),
 	}
 
 	for _, p := range Plugins() {
@@ -117,5 +118,199 @@ func Commands(options ...micro.Option) []*cli.Command {
 		}
 	}
 
+	mcli.RegisterInteractiveCommands(&cli.Command{
+		Name:        "store",
+		Subcommands: command.Subcommands,
+		HelpName:    "store",
+	})
+
 	return []*cli.Command{command}
+}
+
+//storeCommands for data storing
+func storeCommands() []*cli.Command {
+	return []*cli.Command{
+		{
+			Name:   "snapshot",
+			Usage:  "Back up a store",
+			Action: scli.Snapshot,
+			Flags: append(scli.CommonFlags,
+				&cli.StringFlag{
+					Name:    "destination",
+					Usage:   "Backup destination",
+					Value:   "file:///tmp/store-snapshot",
+					EnvVars: []string{"MICRO_SNAPSHOT_DESTINATION"},
+				},
+			),
+		},
+		{
+			Name:   "sync",
+			Usage:  "Copy all records of one store into another store",
+			Action: scli.Sync,
+			Flags:  scli.SyncFlags,
+		},
+		{
+			Name:   "restore",
+			Usage:  "restore a store snapshot",
+			Action: scli.Restore,
+			Flags: append(scli.CommonFlags,
+				&cli.StringFlag{
+					Name:  "source",
+					Usage: "Backup source",
+					Value: "file:///tmp/store-snapshot",
+				},
+			),
+		},
+		{
+			Name:   "databases",
+			Usage:  "List all databases known to the store service",
+			Action: scli.Databases,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "store",
+					Usage: "store service to call",
+					Value: "go.micro.store",
+				},
+			},
+		},
+		{
+			Name:   "tables",
+			Usage:  "List all tables in the specified database known to the store service",
+			Action: scli.Tables,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "store",
+					Usage: "store service to call",
+					Value: "go.micro.store",
+				},
+				&cli.StringFlag{
+					Name:    "database",
+					Aliases: []string{"d"},
+					Usage:   "database to list tables of",
+					Value:   "micro",
+				},
+			},
+		},
+		{
+			Name:      "read",
+			Usage:     "read a record from the store",
+			UsageText: `micro store read [options] key`,
+			Action:    scli.Read,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "database",
+					Aliases: []string{"d"},
+					Usage:   "database to write to",
+					Value:   "micro",
+				},
+				&cli.StringFlag{
+					Name:    "table",
+					Aliases: []string{"t"},
+					Usage:   "table to write to",
+					Value:   "micro",
+				},
+				&cli.BoolFlag{
+					Name:    "prefix",
+					Aliases: []string{"p"},
+					Usage:   "read prefix",
+					Value:   false,
+				},
+				&cli.BoolFlag{
+					Name:    "verbose",
+					Aliases: []string{"v"},
+					Usage:   "show keys and headers (only values shown by default)",
+					Value:   false,
+				},
+				&cli.StringFlag{
+					Name:  "output",
+					Usage: "output format (json, table)",
+					Value: "table",
+				},
+			},
+		},
+		{
+			Name:      "list",
+			Usage:     "list all keys from a store",
+			UsageText: `micro store list [options]`,
+			Action:    scli.List,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "database",
+					Aliases: []string{"d"},
+					Usage:   "database to list from",
+					Value:   "micro",
+				},
+				&cli.StringFlag{
+					Name:    "table",
+					Aliases: []string{"t"},
+					Usage:   "table to write to",
+					Value:   "micro",
+				},
+				&cli.StringFlag{
+					Name:  "output",
+					Usage: "output format (json)",
+				},
+				&cli.BoolFlag{
+					Name:    "prefix",
+					Aliases: []string{"p"},
+					Usage:   "list prefix",
+					Value:   false,
+				},
+				&cli.UintFlag{
+					Name:    "limit",
+					Aliases: []string{"l"},
+					Usage:   "list limit",
+				},
+				&cli.UintFlag{
+					Name:    "offset",
+					Aliases: []string{"o"},
+					Usage:   "list offset",
+				},
+			},
+		},
+		{
+			Name:      "write",
+			Usage:     "write a record to the store",
+			UsageText: `micro store write [options] key value`,
+			Action:    scli.Write,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "expiry",
+					Aliases: []string{"e"},
+					Usage:   "expiry in time.ParseDuration format",
+					Value:   "",
+				},
+				&cli.StringFlag{
+					Name:    "database",
+					Aliases: []string{"d"},
+					Usage:   "database to write to",
+					Value:   "micro",
+				},
+				&cli.StringFlag{
+					Name:    "table",
+					Aliases: []string{"t"},
+					Usage:   "table to write to",
+					Value:   "micro",
+				},
+			},
+		},
+		{
+			Name:      "delete",
+			Usage:     "delete a key from the store",
+			UsageText: `micro store delete [options] key`,
+			Action:    scli.Delete,
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:  "database",
+					Usage: "database to delete from",
+					Value: "micro",
+				},
+				&cli.StringFlag{
+					Name:  "table",
+					Usage: "table to delete from",
+					Value: "micro",
+				},
+			},
+		},
+	}
 }

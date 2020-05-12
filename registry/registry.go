@@ -167,5 +167,7 @@ func Commands(options ...micro.Option) []*cli.Command {
 		}
 	}
 
+	// TODO register for interactive commands
+
 	return []*cli.Command{command}
 }

@@ -53,42 +53,6 @@ func list(c *cli.Context, args []string) ([]byte, error) {
 	return nil, errors.New("unknown command")
 }
 
-func networkConnect(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkConnect(c, args)
-}
-
-func networkConnections(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkConnections(c)
-}
-
-func networkGraph(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkGraph(c)
-}
-
-func networkServices(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkServices(c)
-}
-
-func netNodes(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkNodes(c)
-}
-
-func netRoutes(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkRoutes(c)
-}
-
-func netDNSAdvertise(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkDNSAdvertise(c)
-}
-
-func netDNSRemove(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkDNSRemove(c)
-}
-
-func netDNSResolve(c *cli.Context, args []string) ([]byte, error) {
-	return clic.NetworkDNSResolve(c)
-}
-
 func listServices(c *cli.Context, args []string) ([]byte, error) {
 	return clic.ListServices(c)
 }
@@ -148,12 +112,6 @@ func addEnv(c *cli.Context, args []string) ([]byte, error) {
 	return nil, nil
 }
 
-// netCall calls services through the network
-func netCall(c *cli.Context, args []string) ([]byte, error) {
-	os.Setenv("MICRO_PROXY", "go.micro.network")
-	return clic.CallService(c, args)
-}
-
 // TODO: stream via HTTP
 func streamService(c *cli.Context, args []string) ([]byte, error) {
 	if len(args) < 2 {
@@ -209,4 +167,12 @@ func queryHealth(c *cli.Context, args []string) ([]byte, error) {
 
 func queryStats(c *cli.Context, args []string) ([]byte, error) {
 	return clic.QueryStats(c, args)
+}
+
+func netNodes(c *cli.Context, args []string) ([]byte, error) {
+	return clic.NetworkNodes(c)
+}
+
+func netRoutes(c *cli.Context, args []string) ([]byte, error) {
+	return clic.NetworkRoutes(c)
 }

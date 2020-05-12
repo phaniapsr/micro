@@ -34,15 +34,15 @@ import (
 var (
 	// Name of the network service
 	Name = "go.micro.network"
-	// Name of the micro network
+	// Network name of the micro network
 	Network = "go.micro"
 	// Address is the network address
 	Address = ":8085"
-	// Set the advertise address
+	// Advertise set the advertise address
 	Advertise = ""
 	// Resolver is the network resolver
 	Resolver = "registry"
-	// The tunnel token
+	// Token is the tunnel token
 	Token = "micro"
 )
 
@@ -310,9 +310,9 @@ func Commands(options ...micro.Option) []*cli.Command {
 					netdns.Run(ctx)
 					return nil
 				},
-				Subcommands: mcli.NetworkDNSCommands(),
+				Subcommands: networkDNSCommands(),
 			},
-		}, mcli.NetworkCommands()...),
+		}, networkCommands()...),
 		Action: func(ctx *cli.Context) error {
 			run(ctx, options...)
 			return nil
@@ -328,6 +328,16 @@ func Commands(options ...micro.Option) []*cli.Command {
 			command.Flags = append(command.Flags, flags...)
 		}
 	}
+
+	mcli.RegisterInteractiveCommands(&cli.Command{
+		Name: "network",
+		Subcommands: append(networkCommands(), &cli.Command{
+			Name:        "dns",
+			HelpName:    "dns",
+			Subcommands: networkDNSCommands(),
+		}),
+		HelpName: "network",
+	})
 
 	return []*cli.Command{command}
 }

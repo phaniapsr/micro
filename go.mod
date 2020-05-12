@@ -32,3 +32,5 @@ require (
 	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1
 	google.golang.org/grpc v1.26.0
 )
+
+replace github.com/micro/cli/v2 => github.com/micro/cli/v2 v2.1.3-0.20200512091523-6c19182eed0f

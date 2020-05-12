@@ -20,6 +20,7 @@ import (
 	accountsHandler "github.com/micro/micro/v2/auth/handler/accounts"
 	authHandler "github.com/micro/micro/v2/auth/handler/auth"
 	rulesHandler "github.com/micro/micro/v2/auth/handler/rules"
+	mcli "github.com/micro/micro/v2/cli"
 	cliutil "github.com/micro/micro/v2/cli/util"
 )
 
@@ -247,68 +248,7 @@ func Commands(srvOpts ...micro.Option) []*cli.Command {
 						return nil
 					},
 				},
-				{
-					Name:  "list",
-					Usage: "List auth resources",
-					Subcommands: append([]*cli.Command{
-						{
-							Name:  "rules",
-							Usage: "List auth rules",
-							Action: func(ctx *cli.Context) error {
-								listRules(ctx)
-								return nil
-							},
-						},
-						{
-							Name:  "accounts",
-							Usage: "List auth accounts",
-							Action: func(ctx *cli.Context) error {
-								listAccounts(ctx)
-								return nil
-							},
-						},
-					}),
-				},
-				{
-					Name:  "create",
-					Usage: "Create an auth resource",
-					Subcommands: append([]*cli.Command{
-						{
-							Name:  "rule",
-							Usage: "Create an auth rule",
-							Flags: append(RuleFlags),
-							Action: func(ctx *cli.Context) error {
-								createRule(ctx)
-								return nil
-							},
-						},
-						{
-							Name:  "account",
-							Usage: "Create an auth account",
-							Flags: append(AccountFlags),
-							Action: func(ctx *cli.Context) error {
-								createAccount(ctx)
-								return nil
-							},
-						},
-					}),
-				},
-				{
-					Name:  "delete",
-					Usage: "Delete a auth resource",
-					Subcommands: append([]*cli.Command{
-						{
-							Name:  "rule",
-							Usage: "Delete an auth rule",
-							Flags: RuleFlags,
-							Action: func(ctx *cli.Context) error {
-								deleteRule(ctx)
-								return nil
-							},
-						},
-					}),
-				},
-			}),
+			}, interactiveSubCmds()...),
 		},
 		{
 			Name:  "login",
@@ -346,5 +286,77 @@ func Commands(srvOpts ...micro.Option) []*cli.Command {
 		}
 	}
 
+	mcli.RegisterInteractiveCommands(&cli.Command{
+		Name:        "auth",
+		Subcommands: interactiveSubCmds(),
+		HelpName:    "auth",
+	})
+
 	return commands
+}
+
+func interactiveSubCmds() []*cli.Command {
+	return []*cli.Command{
+		{
+			Name:  "list",
+			Usage: "List auth resources",
+			Subcommands: []*cli.Command{
+				{
+					Name:  "rules",
+					Usage: "List auth rules",
+					Action: func(ctx *cli.Context) error {
+						listRules(ctx)
+						return nil
+					},
+				},
+				{
+					Name:  "accounts",
+					Usage: "List auth accounts",
+					Action: func(ctx *cli.Context) error {
+						listAccounts(ctx)
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:  "create",
+			Usage: "Create an auth resource",
+			Subcommands: []*cli.Command{
+				{
+					Name:  "rule",
+					Usage: "Create an auth rule",
+					Flags: RuleFlags,
+					Action: func(ctx *cli.Context) error {
+						createRule(ctx)
+						return nil
+					},
+				},
+				{
+					Name:  "account",
+					Usage: "Create an auth account",
+					Flags: AccountFlags,
+					Action: func(ctx *cli.Context) error {
+						createAccount(ctx)
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:  "delete",
+			Usage: "Delete a auth resource",
+			Subcommands: []*cli.Command{
+				{
+					Name:  "rule",
+					Usage: "Delete an auth rule",
+					Flags: RuleFlags,
+					Action: func(ctx *cli.Context) error {
+						deleteRule(ctx)
+						return nil
+					},
+				},
+			},
+		},
+	}
 }

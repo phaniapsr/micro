@@ -106,5 +106,6 @@ func Commands(options ...micro.Option) []*cli.Command {
 		}
 	}
 
+	mcli.RegisterInteractiveCommands(command)
 	return []*cli.Command{command}
 }
