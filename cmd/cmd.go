@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	rdebug "runtime/debug"
 
 	ccli "github.com/micro/cli/v2"
 	"github.com/micro/go-micro/v2"
@@ -62,12 +61,6 @@ func init() {
 
 	// set platform build date
 	platform.Version = BuildDate
-
-	bi, ok := rdebug.ReadBuildInfo()
-	if ok {
-		version = bi.Main.Version
-	}
-
 }
 
 func setup(app *ccli.App) {
