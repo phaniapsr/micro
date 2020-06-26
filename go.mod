@@ -17,7 +17,7 @@ require (
 	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/mux v1.7.3
 	github.com/micro/cli/v2 v2.1.2
-	github.com/micro/go-micro/v2 v2.9.1-0.20200624124743-2b506b1a2a10
+	github.com/micro/go-micro/v2 v2.9.1-0.20200626104759-925dbf3753e3
 	github.com/miekg/dns v1.1.27
 	github.com/netdata/go-orchestrator v0.0.0-20190905093727-c793edba0e8f
 	github.com/olekukonko/tablewriter v0.0.4
@@ -33,5 +33,3 @@ require (
 	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1
 	google.golang.org/grpc v1.26.0
 )
-
-replace github.com/micro/go-micro/v2 => github.com/micro/go-micro/v2 v2.9.1-0.20200624222630-0b537e194f22
